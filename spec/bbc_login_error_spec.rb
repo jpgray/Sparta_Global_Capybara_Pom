@@ -105,26 +105,27 @@ describe 'Incorrect user details produces valid error' do
 
     end
     context "check valid username & password" do
-      it "should not accept a valid username & password if it does not match an account" do
+      it "should not accept a valid username & password if the username does not match an account" do
         @bbc_site = BbcSite.new
         @bbc_site.bbc_sign_in_page.visit_sign_in_page
 
-        @bbc_site.bbc_sign_in_page.enter_user_identifier_field('Obi-wan')
+        @bbc_site.bbc_sign_in_page.enter_user_identifier_field('Obi-wan-happy')
         @bbc_site.bbc_sign_in_page.enter_password_field("happy123")
         @bbc_site.bbc_sign_in_page.submit_password
 
-        # expect
+        expect(@bbc_site.bbc_sign_in_page.get_username_error_message).to eq ("Sorry, we can’t find an account with that username. If you're over 13, try your email address instead or get help here.")
       end
 
-      it "should not accept a valid username & password if the password does not match an account" do
+      it "should not accept a valid username & password if the password does not match that account" do
         @bbc_site = BbcSite.new
         @bbc_site.bbc_sign_in_page.visit_sign_in_page
 
         @bbc_site.bbc_sign_in_page.enter_user_identifier_field('happy@cheese.com')
-        @bbc_site.bbc_sign_in_page.enter_password_field("happy12")
+        @bbc_site.bbc_sign_in_page.enter_password_field("happy1234")
         @bbc_site.bbc_sign_in_page.submit_password
 
-        # expect
+        expect(@bbc_site.bbc_sign_in_page.get_password_error_message).to eq ("That's not the right password for that account. Reset your password here.")
+        # currently, this is failing. It's returning an unexpected error message, that I am unable to reproduce.
       end
 
       it "should accept a valid username & password" do
@@ -135,7 +136,7 @@ describe 'Incorrect user details produces valid error' do
         @bbc_site.bbc_sign_in_page.enter_password_field("happy123")
         @bbc_site.bbc_sign_in_page.submit_password
 
-        # expect
+        expect(@bbc_site.bbc_sign_in_page.current_url).to eq ("https://www.bbc.co.uk/")
       end
     end
 
